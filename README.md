@@ -11,13 +11,18 @@ A simple home server setup that uses docker to run the services on one machine. 
 
 ### Components
 
-Proxy -> Traefik
-DNS -> Pi-Hole
-Container Management -> Portainer
-Dashboard -> Heimdall
-DB Servers -> MariaDB, PostgreSQL
-File Server -> Nextcloud (addons: ToDo and Calendar servers)
-File Sync Server -> Syncthing
-Media Server -> Plex
-Torrent Server -> Qbittorrent
-Password Manager Server -> Vaultwarden
+- Proxy -> [Traefik](https://traefik.io/)
+- Ad Block and DNS -> [Pi-Hole](https://pi-hole.net/)
+- Container Management -> [Portainer](https://www.portainer.io/)
+- DB Servers -> [MariaDB](https://mariadb.org/), [PostgreSQL](https://www.postgresql.org/)
+- Password Manager Server -> [Vaultwarden](https://github.com/dani-garcia/vaultwarden)
+- File Server -> [Nextcloud](https://nextcloud.com/) (addons: ToDo and Calendar servers)
+- File Sync Server -> [Syncthing](https://syncthing.net/)
+- Media Server -> [Plex](https://www.plex.tv/)
+- Torrent Server -> [Qbittorrent](https://www.qbittorrent.org/)
+- Dashboard -> [Heimdall](https://heimdall.site/)
+
+### Special Notes
+
+- Ensure that the DNS records are setup in your local DNS server before setting up Traefik. The devices will need to know where to for the configured URLs.
+- Nextcloud (file server) can include files from Syncthing and allow files to be available on your personal devices and the cloud.
