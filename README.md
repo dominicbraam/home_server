@@ -1,4 +1,4 @@
-# home_serv
+# home_server
 
 A simple home server setup that uses docker to run the services on one machine. Using containers to manage the services is a lot easier than running them natively.
 
