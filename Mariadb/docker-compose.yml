@@ -1,0 +1,18 @@
+version: "2.1"
+
+services:
+  mariadb:
+    image: lscr.io/linuxserver/mariadb:latest
+    container_name: mariadb
+    restart: ${RESTART_POLICY}
+    networks:
+      - proxy
+    volumes:
+      - ${MARIADB_CONF_DIR}:/config
+      - ${MARIADB_DATA_DIR}:/var/lib/mysql
+    ports:
+      - 19306:3306
+
+networks:
+  proxy:
+    external: true

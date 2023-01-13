@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: ${RESTART_POLICY}
+    networks:
+      - proxy
+    environment:
+      - WEBSOCKET_ENABLED=true  # Enable WebSocket notifications.
+      - DOMAIN=https://${VAULTWARDEN_URL}
+    volumes:
+      - ${VAULTWARDEN_DATA_DIR}:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vaultwarden.entrypoints=http"
+      - "traefik.http.routers.vaultwarden.rule=Host(`${VAULTWARDEN_URL}`)"
+      - "traefik.http.middlewares.vaultwarden-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.vaultwarden.middlewares=vaultwarden-https-redirect"
+      - "traefik.http.routers.vaultwarden-secure.entrypoints=https"
+      - "traefik.http.routers.vaultwarden-secure.rule=Host(`${VAULTWARDEN_URL}`)"
+      - "traefik.http.routers.vaultwarden-secure.tls=true"
+      - "traefik.http.routers.vaultwarden-secure.service=vaultwarden"
+      - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
+      - "traefik.http.routers.vaultwarden-websocket.entrypoints=http"
+      - "traefik.http.routers.vaultwarden-websocket.rule=Host(`${VAULTWARDEN_URL}`) && Path(`/notifications/hub`)"
+      - "traefik.http.middlewares.vaultwarden-websocket-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.vaultwarden-websocket.middlewares=vaultwarden-websocket-https-redirect"
+      - "traefik.http.routers.vaultwarden-websocket-secure.entrypoints=https"
+      - "traefik.http.routers.vaultwarden-websocket-secure.rule=Host(`${VAULTWARDEN_URL}`) && Path(`/notifications/hub`)"
+      - "traefik.http.routers.vaultwarden-websocket-secure.tls=true"
+      - "traefik.http.routers.vaultwarden-websocket-secure.service=vaultwarden-websocket"
+      - "traefik.http.services.vaultwarden-websocket.loadbalancer.server.port=3012"
+      - "traefik.docker.network=proxy"
+
+networks:
+  proxy:
+    external: true

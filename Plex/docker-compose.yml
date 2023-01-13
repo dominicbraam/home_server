@@ -1,0 +1,19 @@
+version: "2.1"
+services:
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: Plex
+    restart: ${RESTART_POLICY}
+    network_mode: host
+    environment:
+      - VERSION=docker
+    volumes:
+      - ${PLEX_DB}:/config
+      - ${PLEX_TVSERIES_DIR}:/tv
+      - ${PLEX_MOVIES_DIR}:/movies
+      - ${PLEX_MUSIC_DIR}:/music
+      - ${PLEX_HOMEVIDEOS_DIR}:/homevideos
+      - ${PLEX_PREROLLCOLLECTION_DIR}:/preroll-collection
+
+# Traefik setup is not needed as Plex has its own way of dealing with things for remote access:
+# https://support.plex.tv/articles/200289506-remote-access/

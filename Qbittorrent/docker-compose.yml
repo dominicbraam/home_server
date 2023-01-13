@@ -1,0 +1,16 @@
+version: "2.1"
+services:
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent
+    container_name: qbittorrent
+    restart: ${RESTART_POLICY}
+    ports:
+      - ${QBITTORRENT_PORT}:${QBITTORRENT_PORT}
+      - 6881:6881
+      - 6881:6881/udp
+    environment:
+      - WEBUI_PORT=${QBITTORRENT_PORT}
+    volumes:
+      - ${QBITTORRENT_CONF_DIR}:/config
+      - ${QBITTORRENT_DOWNLOADS_DIR}:/downloads
+      - ${QBITTORRENT_THEME_DIR}:/VueTorrent

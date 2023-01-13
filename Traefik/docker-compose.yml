@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    restart: ${RESTART_POLICY}
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${TRAEFIK_HOMEASSISTANT_YML_PATH}:/etc/traefik/homeassistant.yml:ro
+      - ${TRAEFIK_TRAEFIK_YML_PATH}:/traefik.yml:ro
+      - ${TRAEFIK_ACME_JSON_PATH}:/acme.json
+      - ${TRAEFIK_CONFIG_YML_PATH}:/config.yml:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.entrypoints=http"
+      - "traefik.http.routers.traefik.rule=Host(`${TRAEFIK_URL}`)"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_USER}:${TRAEFIK_PW}"
+      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
+      - "traefik.http.routers.traefik-secure.entrypoints=https"
+      - "traefik.http.routers.traefik-secure.rule=Host(`${TRAEFIK_URL}`)"
+      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
+      - "traefik.http.routers.traefik-secure.tls=true"
+      - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.traefik-secure.tls.domains[2].main=${HA_URL}"
+      - "traefik.http.routers.traefik-secure.tls.domains[1].main=${BASE_URL}"
+      - "traefik.http.routers.traefik-secure.tls.domains[1].sans=*.${BASE_URL}"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].main=${LOCAL_URL}"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.${LOCAL_URL}"
+      - "traefik.http.routers.traefik-secure.service=api@internal"
+    command:
+      - "--providers.file.filename=/etc/traefik/homeassistant.yml"
+      - "--providers.file.watch=true"
+
+networks:
+  proxy:
+    external: true

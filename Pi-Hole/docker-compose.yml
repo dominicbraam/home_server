@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    restart: ${RESTART_POLICY}
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    environment:
+      WEBPASSWORD: ${PIHOLE_WEB_PW}
+      ServerIP: ${SERVER_IP} # Actual server IP. Matches DHCP conf file IP
+      VIRTUAL_HOST: ${PIHOLE_URL} # Same as port traefik config
+      WEBTHEME: default-dark
+      # PIHOLE_DNS_: 1.1.1.1;1.0.0.1
+      # DNSSEC: 'true'
+      # DNSMASQ_LISTENING: all
+      # PIHOLE_DOMAIN: proxy
+    volumes:
+      - ${PIHOLE_ETC_DIR}:/etc/pihole/
+      - ${PIHOLE_DNSMASQ_DIR}:/etc/dnsmasq.d/
+    # cap_add:
+    # - NET_ADMIN # Recommended but not required (DHCP needs NET_ADMIN)
+    networks: 
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pihole.entrypoints=http"
+      - "traefik.http.routers.pihole.rule=Host(`${PIHOLE_URL}`)"
+      - "traefik.http.middlewares.pihole-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.pihole.middlewares=pihole-https-redirect"
+      - "traefik.http.routers.pihole-secure.entrypoints=https"
+      - "traefik.http.routers.pihole-secure.rule=Host(`${PIHOLE_URL}`)"
+      - "traefik.http.routers.pihole-secure.tls=true"
+      - "traefik.http.routers.pihole-secure.service=pihole"
+      - "traefik.http.services.pihole.loadbalancer.server.port=80"
+      - "traefik.docker.network=proxy"
+
+networks: 
+  proxy:
+    external: true

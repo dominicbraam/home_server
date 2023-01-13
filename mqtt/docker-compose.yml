@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto
+    restart: ${RESTART_POLICY}
+    network_mode: host
+    volumes:
+      - ${MQTT_CONF_DIR}:/mosquitto/conf
+      - ${MQTT_DATA_DIR}:/mosquitto/data
+      - ${MQTT_LOG_DIR}:/mosquitto/log
