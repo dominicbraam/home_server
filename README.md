@@ -14,12 +14,13 @@ A simple home server setup that uses docker to run the services on one machine. 
 - Proxy -> [Traefik](https://traefik.io/)
 - Ad Block and DNS -> [Pi-Hole](https://pi-hole.net/)
 - Container Management -> [Portainer](https://www.portainer.io/)
-- DB Servers -> [MariaDB](https://mariadb.org/), [PostgreSQL](https://www.postgresql.org/)
-- Password Manager Server -> [Vaultwarden](https://github.com/dani-garcia/vaultwarden)
+- Databases -> [MariaDB](https://mariadb.org/), [PostgreSQL](https://www.postgresql.org/)
+- Password Manager -> [Vaultwarden](https://github.com/dani-garcia/vaultwarden)
 - File Server -> [Nextcloud](https://nextcloud.com/) (addons: ToDo and Calendar servers)
-- File Sync Server -> [Syncthing](https://syncthing.net/)
+- File Sync -> [Syncthing](https://syncthing.net/)
 - Media Server -> [Plex](https://www.plex.tv/)
-- Torrent Server -> [Qbittorrent](https://www.qbittorrent.org/)
+- Torrent -> [Qbittorrent](https://www.qbittorrent.org/)
+- MQTT -> [Mosquito](https://mosquitto.org/)
 - Dashboard -> [Heimdall](https://heimdall.site/)
 
 ### Special Notes
