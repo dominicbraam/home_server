@@ -29,3 +29,7 @@ A simple home server setup that uses docker to run the services on one machine. 
 
 - Ensure that the DNS records are setup in your local DNS server before setting up Traefik. The devices will need to know where to for the configured URLs.
 - Nextcloud (file server) can include files from Syncthing and allow files to be available on your personal devices and the cloud. Nextcloud also offers desktop apps for Linux, MacOS and Windows for easy file syncing.
+
+### Dashboard
+
+![screenshot1](https://raw.githubusercontent.com/dominicbraam/home_server/main/screenshots/serv-dash_20230111.png)
