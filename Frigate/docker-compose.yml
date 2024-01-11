@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  frigate:
+    container_name: frigate
+    privileged: true # this may not be necessary for all setups
+    restart: ${RESTART_POLICY}
+    image: blakeblackshear/frigate:stable
+    network_mode: "host"
+      #    networks:
+      #      - proxy
+      #      - host
+    shm_size: "64mb" # update for your cameras based on calculation above
+    devices:
+      #- /dev/bus/usb:/dev/bus/usb # passes the USB Coral, needs to be modified for other versions
+        #- /dev/apex_0:/dev/apex_0 # passes a PCIe Coral, follow driver instructions here https://coral.ai/docs/m2/get-started/#2a-on-linux
+      - /dev/dri/renderD128 # for intel hwaccel, needs to be updated for your hardware
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${FRIGATE_CONF_FILE}:/config/config.yml:ro
+      - ${FRIGATE_STORAGE_DIR}:/media/frigate
+      - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000
+    ports:
+      - "5000:5000"
+      - "1935:1935" # RTMP feeds
+    environment:
+      FRIGATE_RTSP_PASSWORD: "${FRIGATE_RTSP_PW}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frigate.entrypoints=http"
+      - "traefik.http.routers.frigate.rule=Host(`${FRIGATE_URL}`)"
+      - "traefik.http.middlewares.frigate-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.frigate.middlewares=frigate-https-redirect"
+      - "traefik.http.routers.frigate-secure.entrypoints=https"
+      - "traefik.http.routers.frigate-secure.rule=Host(`${FRIGATE_URL}`)"
+      - "traefik.http.routers.frigate-secure.tls=true"
+      - "traefik.http.routers.frigate-secure.service=frigate"
+      - "traefik.http.services.frigate.loadbalancer.server.port=5000"
+      - "traefik.docker.network=proxy"
+
+networks:
+  proxy:
+    external: true
+  host:

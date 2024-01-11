@@ -1,7 +1,7 @@
 version: "2.1"
 services:
   plex:
-    image: lscr.io/linuxserver/plex:latest
+    image: linuxserver/plex:1.32.8
     container_name: Plex
     restart: ${RESTART_POLICY}
     network_mode: host

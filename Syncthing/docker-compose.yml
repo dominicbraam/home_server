@@ -1,7 +1,7 @@
 version: "2.1"
 services:
   syncthing:
-    image: lscr.io/linuxserver/syncthing
+    image: linuxserver/syncthing:1.27.2
     container_name: syncthing
     restart: ${RESTART_POLICY}
     hostname: Raspberry Pi #optional

@@ -2,7 +2,7 @@ version: "3"
 
 services:
   pihole:
-    image: pihole/pihole:latest
+    image: pihole/pihole:2023.11.0
     container_name: pihole
     restart: ${RESTART_POLICY}
     ports:
@@ -10,9 +10,10 @@ services:
       - "53:53/udp"
     environment:
       WEBPASSWORD: ${PIHOLE_WEB_PW}
-      ServerIP: ${SERVER_IP} # Actual server IP. Matches DHCP conf file IP
+      FTLCONF_LOCAL_IPV4: ${SERVER_IP}
       VIRTUAL_HOST: ${PIHOLE_URL} # Same as port traefik config
       WEBTHEME: default-dark
+      TEMPERATUREUNIT: c
       # PIHOLE_DNS_: 1.1.1.1;1.0.0.1
       # DNSSEC: 'true'
       # DNSMASQ_LISTENING: all

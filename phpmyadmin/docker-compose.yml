@@ -1,0 +1,17 @@
+version: "2.1"
+
+services:
+  phpmyadmin:
+    image: linuxserver/phpmyadmin:5.2.1
+    container_name: phpmyadmin
+    restart: ${RESTART_POLICY}
+    environment:
+      - PMA_ARBITRARY=1 # Set to 1 to allow you to connect to any server. Setting to 0 will only allow you to connect to specified hosts
+      - PUID=${PUID}
+      - PGID=${PGID}
+    ports:
+      - ${PHPMYADMIN_PORT}:80
+
+networks:
+  proxy:
+    external: true
