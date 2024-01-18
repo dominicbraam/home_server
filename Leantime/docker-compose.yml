@@ -1,0 +1,60 @@
+version: '3.3'
+
+services:
+  leantime_db:
+    image: mysql:8.0
+    container_name: leantime_db
+    volumes:
+      - ${LEAN_DB}:/var/lib/mysql
+    restart: ${RESTART_POLICY}
+    networks:
+      - proxy
+    environment:
+      MYSQL_ROOT_PASSWORD: ${LEAN_DB_PASSWORD}
+      MYSQL_DATABASE: ${LEAN_DB_NAME}
+      MYSQL_USER: ${LEAN_DB_USER}
+      MYSQL_PASSWORD: ${LEAN_DB_PASSWORD}
+    command: --character-set-server=UTF8MB4 --collation-server=UTF8MB4_unicode_ci
+
+  leantime:
+    image: leantime/leantime:3.0.0
+    container_name: leantime
+    restart: ${RESTART_POLICY}
+    networks:
+      - proxy
+    volumes:
+      - ${LEAN_PUBLIC_FILES}:/var/www/html/public/userfiles     # Volume to store public files, logo etc
+      - ${LEAN_PRIVATE_FILES}:/var/www/html/userfiles           # Volume to store private user uploaded files
+    depends_on:
+      - leantime_db                                         # Don't start Leantime unless leantime_db is running
+    environment:
+      LEAN_APP_URL: https://${LEAN_URL}
+      LEAN_APP_DIR: '/leantime'
+      LEAN_DB_HOST: leantime_db
+      LEAN_DB_USER: ${LEAN_DB_USER}
+      LEAN_DB_PASSWORD: ${LEAN_DB_PASSWORD}
+      LEAN_DB_DATABASE: ${LEAN_DB_NAME}
+      # Local File Uploads
+      LEAN_USER_FILE_PATH: 'userfiles/'                 # Local relative path to store uploaded files (if not using S3)
+      LEAN_DB_BACKUP_PATH: 'backupdb/'                  # Local relative path to store backup files, need permission to write
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.leantime.entrypoints=http"
+      - "traefik.http.routers.leantime.rule=Host(`${LEAN_URL}`)"
+      - "traefik.http.middlewares.leantime-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.leantime.middlewares=leantime-https-redirect"
+      - "traefik.http.routers.leantime-secure.entrypoints=https"
+      - "traefik.http.routers.leantime-secure.rule=Host(`${LEAN_URL}`)"
+      - "traefik.http.routers.leantime-secure.tls=true"
+      - "traefik.http.routers.leantime-secure.service=leantime"
+      - "traefik.http.services.leantime.loadbalancer.server.port=80"
+      - "traefik.docker.network=proxy"
+
+volumes:
+  db_data:
+  userfiles:
+  public_userfiles:
+
+networks:
+  proxy:
+    external: true
